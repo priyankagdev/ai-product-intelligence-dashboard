@@ -6,7 +6,7 @@ The application provides a centralized view of AI model usage, costs, request vo
 
 ## 🚀 Live Demo
 
-[View Live Application](YOUR_LIVE_URL)
+[View Live Application](https://ai-product-intelligence-dashboard-4qmba9pjx-priyankagdev.vercel.app)
 
 ## 📸 Overview
 
