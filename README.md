@@ -1,75 +1,98 @@
-# React + TypeScript + Vite
+# AI Product Intelligence Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern AI usage and performance dashboard built with React, TypeScript, Tailwind CSS, and Recharts.
 
-Currently, two official plugins are available:
+The application provides a centralized view of AI model usage, costs, request volume, and latency through a responsive enterprise-style dashboard.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Live Demo
 
-## React Compiler
+[View Live Application](YOUR_LIVE_URL)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📸 Overview
 
-## Expanding the ESLint configuration
+The AI Product Intelligence Dashboard is designed to help product and engineering teams monitor AI model usage and performance from a single interface.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Dashboard
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- AI request volume
+- Token usage
+- Estimated AI costs
+- Request trend visualization
+- Responsive dashboard layout
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### AI Models
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- AI model performance cards
+- Model usage statistics
+- Request volume
+- Cost tracking
+- Latency monitoring
+- Search by model
+- Filter by provider
+- Responsive performance table
 
-```
+## ✨ Key Features
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+- 📊 AI usage dashboard
+- 🤖 AI model monitoring
+- 💰 Cost tracking
+- ⚡ Latency monitoring
+- 🔎 Model search
+- 🏷️ Provider filtering
+- 📈 Usage trend visualization
+- 📱 Responsive design
+- ⏳ Loading states
+- ❌ Error handling
+- 🔄 Simulated asynchronous API layer
+- 🧭 Client-side routing
+- ♻️ Reusable React components
+- 📐 Type-safe TypeScript architecture
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Tech Stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Frontend
 
-```
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Recharts
+
+### Development
+
+- ESLint
+- Git
+- GitHub
+
+## 🏗️ Project Architecture
+
+```text
+src/
+├── components/
+│   ├── Header.tsx
+│   ├── ModelCard.tsx
+│   ├── ModelTable.tsx
+│   ├── Sidebar.tsx
+│   ├── StatCard.tsx
+│   └── UsageChart.tsx
+│
+├── pages/
+│   ├── Analytics.tsx
+│   ├── Dashboard.tsx
+│   ├── Models.tsx
+│   ├── Prompts.tsx
+│   ├── Settings.tsx
+│   └── Users.tsx
+│
+├── services/
+│   ├── dashboardService.ts
+│   └── modelService.ts
+│
+├── types/
+│   ├── AIModel.ts
+│   └── DashboardStats.ts
+│
+├── App.tsx
+├── index.css
+└── main.tsx

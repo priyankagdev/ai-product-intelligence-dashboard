@@ -30,7 +30,7 @@ function App() {
 
                     <Header
                         title="AI Product Intelligence"
-                        subtitle="Monitor AI usage, performance and costs"
+                        subTitle="Monitor AI usage, performance and costs"
                     />
 
                     <Routes>
