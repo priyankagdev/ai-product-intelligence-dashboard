@@ -81,7 +81,7 @@ src/
 
 - The app is hosted on **GitHub Pages**: https://priyankagdev.github.io/ai-product-intelligence-dashboard/
 - The workflow in `.github/workflows/deploy-pages.yml` builds it in demo mode and publishes it on every push to `main`. It needs no backend.
-- The original frontend-only V1 is preserved at the `v1.0.0` tag. It was previously hosted on Vercel, which no longer builds this repository.
+- The original frontend-only V1 is preserved at the `v1.0.0` tag.
 - The Pages build sets `BASE_PATH=/ai-product-intelligence-dashboard/`. Without it (local development) the app is served from the site root.
 - GitHub Pages cannot rewrite routes, so the workflow copies `index.html` to `404.html`. Refreshing a route such as `/models` is served through that file, and React Router renders the page (the HTTP status of that response is 404).
 
