@@ -12,7 +12,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import DashboardFiltersProvider from "./context/DashboardFiltersProvider";
 
-// "/" at the site root (local, Vercel); the repository subpath on GitHub Pages.
+// "/" at the site root (local development); the repository subpath on GitHub Pages.
 const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 function App() {

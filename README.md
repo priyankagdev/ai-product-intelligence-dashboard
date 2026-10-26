@@ -4,7 +4,7 @@ A SaaS-style dashboard for monitoring AI model usage, cost and latency, built wi
 
 ## 🚀 Live Demo
 
-[View Live Application](https://ai-product-intelligence-dashboard-4qmba9pjx-priyankagdev.vercel.app)
+[View Live Application](https://priyankagdev.github.io/ai-product-intelligence-dashboard/)
 
 > The hosted version runs in **demo mode**: all figures are simulated demo data bundled with the app, so no backend is required.
 
@@ -59,7 +59,7 @@ Vite proxies `/api` requests to the API on port 3000.
 | Script | Purpose |
 |---|---|
 | `npm run build` | Type-check and build against the API |
-| `npm run build:demo` | Type-check and build in demo mode (used for deployment, see `vercel.json`) |
+| `npm run build:demo` | Type-check and build in demo mode (used for deployment, see `.github/workflows/deploy-pages.yml`) |
 | `npm run lint` | Run ESLint |
 | `npm run preview` | Preview the last production build |
 
@@ -79,9 +79,10 @@ src/
 
 ## 🚢 Deployment
 
-- **V1** is deployed on Vercel from the `main` branch.
-- **V2** is built in demo mode and published to GitHub Pages by the workflow in `.github/workflows/deploy-pages.yml` whenever `v2` is pushed. It needs no backend.
-- The Pages build sets `BASE_PATH=/ai-product-intelligence-dashboard/`. Without it (local development, Vercel) the app is served from the site root.
+- The app is hosted on **GitHub Pages**: https://priyankagdev.github.io/ai-product-intelligence-dashboard/
+- The workflow in `.github/workflows/deploy-pages.yml` builds it in demo mode and publishes it on every push to `main`. It needs no backend.
+- The original frontend-only V1 is preserved at the `v1.0.0` tag. It was previously hosted on Vercel, which no longer builds this repository.
+- The Pages build sets `BASE_PATH=/ai-product-intelligence-dashboard/`. Without it (local development) the app is served from the site root.
 - GitHub Pages cannot rewrite routes, so the workflow copies `index.html` to `404.html`. Refreshing a route such as `/models` is served through that file, and React Router renders the page (the HTTP status of that response is 404).
 
 To try the Pages build locally:
