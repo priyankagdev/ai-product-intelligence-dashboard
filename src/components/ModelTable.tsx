@@ -1,57 +1,103 @@
 import type { AIModel } from "../types/AIModel"
+import { formatLatency, formatRequestCount, formatUsdCost } from "../utils/modelFormatters";
+import { modelSortDirection, type ModelSortKey } from "../utils/modelSorting";
 
 type ModelTableProps = {
     models: AIModel[];
+    sortKey: ModelSortKey;
+    onSortChange: (sortKey: ModelSortKey) => void;
 }
 
-function ModelTable({ models }: ModelTableProps) {
+const headerCell = "whitespace-nowrap px-6 py-4 text-sm font-semibold text-muted";
+
+type SortableHeaderProps = {
+    label: string;
+    columnKey: ModelSortKey;
+    align: "left" | "right";
+    sortKey: ModelSortKey;
+    onSortChange: (sortKey: ModelSortKey) => void;
+}
+
+function SortableHeader({ label, columnKey, align, sortKey, onSortChange }: SortableHeaderProps) {
+    const isActive = sortKey === columnKey;
+    const direction = modelSortDirection[columnKey];
+    const arrow = (
+        <span aria-hidden="true" className="inline-block w-3 text-accent">
+            {isActive ? (direction === "desc" ? "↓" : "↑") : ""}
+        </span>
+    );
+
     return (
-        <section>
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Model Performance
-            </h2>
-            <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-                <table className="w-full min-w-175 bg-white">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Provider</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Requests</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Costs</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Latency</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {models.map((model) => (
-                            <tr
-                                key={model.id}
-                                className="border-t border-gray-100 hover:bg-gray-50"
-                            >
-                                <td className="px-6 py-4 font-medium">
-                                    {model.name}
-                                </td>
+        <th
+            scope="col"
+            aria-sort={isActive ? (direction === "desc" ? "descending" : "ascending") : "none"}
+            className={`${headerCell} ${align === "right" ? "text-right" : "text-left"}`}
+        >
+            <button
+                type="button"
+                onClick={() => onSortChange(columnKey)}
+                className={`inline-flex items-center gap-1 rounded transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    isActive ? "text-primary" : ""
+                }`}
+            >
+                {/* Fixed-width slot so the sort arrow never shifts the label; on right-aligned
+                    columns it sits before the label to keep the text flush with the numbers. */}
+                {align === "right" && arrow}
+                {label}
+                {align === "left" && arrow}
+            </button>
+        </th>
+    );
+}
 
-                                <td className="px-6 py-4 text-gray-600">
+function ModelTable({ models, sortKey, onSortChange }: ModelTableProps) {
+    const sortProps = { sortKey, onSortChange };
+
+    return (
+        <div className="max-w-full min-w-0 overflow-x-auto rounded-xl border border-border shadow-sm">
+            <table className="w-full bg-card text-primary">
+                <caption className="sr-only">Model performance</caption>
+                <thead className="bg-page">
+                    <tr>
+                        <SortableHeader label="Model" columnKey="name" align="left" {...sortProps} />
+                        <th scope="col" className={`${headerCell} text-left`}>Provider</th>
+                        <SortableHeader label="Requests" columnKey="requests" align="right" {...sortProps} />
+                        <SortableHeader label="Cost" columnKey="cost" align="right" {...sortProps} />
+                        <SortableHeader label="Latency" columnKey="latency" align="right" {...sortProps} />
+                    </tr>
+                </thead>
+                <tbody>
+                    {models.map((model) => (
+                        <tr
+                            key={model.id}
+                            className="border-t border-border transition-colors hover:bg-page"
+                        >
+                            <th scope="row" className="break-words px-6 py-4 text-left font-medium">
+                                {model.name}
+                            </th>
+
+                            <td className="px-6 py-4">
+                                <span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent">
                                     {model.provider}
-                                </td>
+                                </span>
+                            </td>
 
-                                <td className="px-6 py-4">
-                                    {model.requests.toLocaleString()}
-                                </td>
+                            <td className="whitespace-nowrap px-6 py-4 text-right tabular-nums">
+                                {formatRequestCount(model.requests)}
+                            </td>
 
-                                <td className="px-6 py-4">
-                                    ${model.cost.toFixed(2)}
-                                </td>
+                            <td className="whitespace-nowrap px-6 py-4 text-right tabular-nums">
+                                {formatUsdCost(model.costUsd)}
+                            </td>
 
-                                <td className="px-6 py-4">
-                                    {model.latency} ms
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                            <td className="whitespace-nowrap px-6 py-4 text-right tabular-nums">
+                                {formatLatency(model.latencyMs)}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     )
 }
 

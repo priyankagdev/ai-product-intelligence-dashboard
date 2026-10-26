@@ -1,58 +1,131 @@
 import { useEffect, useState } from "react";
 import type { DashboardStats } from "../types/DashboardStats";
-import { getDashboardStats } from "../services/dashboardService";
+import { getDashboardData } from "../services/dashboardService";
+import { useAsyncData } from "../hooks/useAsyncData";
+import { useDashboardFilters } from "../context/dashboardFilters";
+import { summarizeRange } from "../utils/dashboardMetrics";
+import PageHeader from "../components/PageHeader";
 import StatCard from "../components/StatCard";
-import UsageChart from "../components/UsageChart";
+import UsageChart, { type ChartMetric } from "../components/UsageChart";
+import RefreshControl from "../components/RefreshControl";
+import DateRangeFilter from "../components/DateRangeFilter";
+import ErrorState from "../components/ErrorState";
+import Skeleton from "../components/Skeleton";
+import type { DashboardKpiIcon } from "../components/AppIcon";
+
+const statIcons: Record<DashboardStats["id"], DashboardKpiIcon> = {
+    requests: "requests",
+    tokens: "tokens",
+    cost: "cost",
+};
+
+const requestFormatter = new Intl.NumberFormat("en-US");
+const tokenFormatter = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+});
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+
+function formatStatValue(stat: DashboardStats): string {
+    switch (stat.id) {
+        case "requests":
+            return requestFormatter.format(stat.value);
+        case "tokens":
+            return tokenFormatter.format(stat.value);
+        case "cost":
+            return currencyFormatter.format(stat.value);
+        default: {
+            const exhaustiveCheck: never = stat;
+            return exhaustiveCheck;
+        }
+    }
+}
+
+function DashboardSkeleton() {
+    return (
+        <div role="status">
+            <span className="sr-only">Loading dashboard...</span>
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+                {[0, 1, 2].map((index) => (
+                    <Skeleton key={index} className="h-40" />
+                ))}
+            </div>
+            <Skeleton className="mt-8 h-[22rem]" />
+        </div>
+    );
+}
 
 function Dashboard() {
-    const [stats, setStats] = useState<DashboardStats[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data, loading, refreshing, error, updatedAt, reload } = useAsyncData(
+        getDashboardData,
+        "Failed to load dashboard statistics.",
+    );
+    const { activeDays, setDataLength } = useDashboardFilters();
+    const [metric, setMetric] = useState<ChartMetric>("requests");
 
+    // Tell the top-bar date-range filter how much data is available.
+    const dataLength = data?.chartData.length ?? 0;
     useEffect(() => {
-        getDashboardStats()
-            .then((data) => {
-                setStats(data);
-                setLoading(false);
-            })
-            .catch(() => {
-                setError("Failed to load dashboard statistics.");
-                setLoading(false);
-            });
-    }, []);
+        setDataLength(dataLength);
+        return () => setDataLength(0);
+    }, [dataLength, setDataLength]);
+
+    const summary = data && dataLength > 0 ? summarizeRange(data, activeDays) : null;
 
     return (
-        <div>
-            <h2 className="text-2xl font-semibold text-gray-900">
-                Dashboard
-            </h2>
-
-            <p className="mt-2 text-gray-500">
-                AI usage overview
-            </p>
+        <div className="min-w-0">
+            <PageHeader
+                title="Dashboard"
+                description="AI usage overview"
+                actions={
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Desktop shows this filter in the top bar instead */}
+                        <div className="md:hidden">
+                            <DateRangeFilter />
+                        </div>
+                        <RefreshControl
+                            updatedAt={updatedAt}
+                            refreshing={refreshing}
+                            onRefresh={reload}
+                        />
+                    </div>
+                }
+            />
 
             {loading ? (
-                <p className="mt-6 text-gray-500">
-                    Loading dashboard...
-                </p>
+                <DashboardSkeleton />
             ) : error ? (
-                <p className="mt-6 text-red-500">
-                    {error}
+                <ErrorState message={error} onRetry={reload} />
+            ) : summary === null ? (
+                <p className="mt-8 text-center text-muted">
+                    No usage data available yet.
                 </p>
             ) : (
                 <>
-                    <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {stats.map((stat) => (
+                    <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+                        {summary.stats.map((stat) => (
                             <StatCard
                                 key={stat.id}
                                 title={stat.title}
-                                value={stat.value}
+                                value={formatStatValue(stat)}
                                 description={stat.description}
+                                icon={statIcons[stat.id]}
+                                change={summary.changes[stat.id]}
+                                changeLabel={`vs previous ${summary.days} days`}
                             />
                         ))}
                     </div>
 
-                    <UsageChart />
+                    <UsageChart
+                        data={summary.chartData}
+                        metric={metric}
+                        onMetricChange={setMetric}
+                    />
                 </>
             )}
         </div>
