@@ -77,6 +77,27 @@ src/
 └── config.ts      Demo-mode switch
 ```
 
+## 🚢 Deployment
+
+- **V1** is deployed on Vercel from the `main` branch.
+- **V2** is built in demo mode and published to GitHub Pages by the workflow in `.github/workflows/deploy-pages.yml` whenever `v2` is pushed. It needs no backend.
+- The Pages build sets `BASE_PATH=/ai-product-intelligence-dashboard/`. Without it (local development, Vercel) the app is served from the site root.
+- GitHub Pages cannot rewrite routes, so the workflow copies `index.html` to `404.html`. Refreshing a route such as `/models` is served through that file, and React Router renders the page (the HTTP status of that response is 404).
+
+To try the Pages build locally:
+
+```bash
+# macOS / Linux (in Git Bash on Windows, prefix with MSYS_NO_PATHCONV=1)
+BASE_PATH=/ai-product-intelligence-dashboard/ npm run build:demo
+npm run preview
+```
+
+```powershell
+# Windows PowerShell
+$env:BASE_PATH = "/ai-product-intelligence-dashboard/"; npm run build:demo
+npm run preview
+```
+
 ## 🔭 Roadmap
 
 - Prompts, Analytics, Users and Settings modules

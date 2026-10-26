@@ -12,11 +12,14 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import DashboardFiltersProvider from "./context/DashboardFiltersProvider";
 
+// "/" at the site root (local, Vercel); the repository subpath on GitHub Pages.
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 function App() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <BrowserRouter>
+        <BrowserRouter basename={routerBasename}>
             <DashboardFiltersProvider>
                 <div className="flex min-h-screen bg-page text-primary">
                     <Sidebar

@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+    // Only the GitHub Pages workflow sets BASE_PATH (a repository subpath);
+    // local development and Vercel serve from the site root.
+    base: process.env.BASE_PATH ?? "/",
     plugins: [react(), tailwindcss()],
     server: {
         proxy: {
